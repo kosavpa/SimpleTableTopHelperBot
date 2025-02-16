@@ -1,0 +1,4 @@
+.venv
+.idea
+bot.session
+bot.session-journal
