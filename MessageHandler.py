@@ -65,3 +65,16 @@ async def create_poll(event: NewMessage.Event):
             file=MessageMediaPoll(get_poll(batch, info), PollResults()),
             reply_to=info.forum_id
         )
+
+@client.on(events.NewMessage(incoming=True, pattern='^(/info).*'))
+async def game_list(event: NewMessage.Event):
+    message: Message = await client.get_messages(event.chat, ids=event.message.id)
+
+    info: Info
+
+    if message.reply_to and message.reply_to.forum_topic:
+        info = await select_by_chat_and_forum(message.chat.id, message.reply_to.reply_to_msg_id)
+    else:
+        info = await select_by_chat_and_forum(message.chat.id)
+
+    await client.send_message(info.chat_id, reply_to=info.forum_id, message=info.get_info())

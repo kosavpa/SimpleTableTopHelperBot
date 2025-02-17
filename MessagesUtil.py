@@ -2,6 +2,7 @@ import sys
 from datetime import datetime
 from random import randint
 
+import pytz
 from croniter import croniter
 from telethon.tl.custom import Message
 from telethon.tl.types import Poll, PollAnswer, TypeTextWithEntities
@@ -29,6 +30,8 @@ def create_info(message: Message) -> Info | None:
                 info.cron_game = param.split('=')[1].strip()
             case 'range':
                 info.range = param.split('=')[1].strip()
+            case 'time_zone':
+                info.time_zone = param.split('=')[1].strip()
 
     if (not info.range or len(info.range) == 0
             or not info.sheet_id or len(info.sheet_id) == 0
@@ -41,12 +44,18 @@ def create_info(message: Message) -> Info | None:
 
         info.chat_id = message.chat.id
 
+        if not info.time_zone or len(info.time_zone) == 0:
+            info.time_zone = 'Europe/Samara'
+
         return info
 
 
 def get_answers(game_info: list[str]) -> list:
     count = 0
     answers = []
+
+    if len(game_info) == 1:
+        game_info.append('Mock answer')
 
     for game_name in game_info:
         answers.append(PollAnswer(text=TypeTextWithEntities(game_name, []), option=hex(count).encode()))
@@ -58,9 +67,11 @@ def get_answers(game_info: list[str]) -> list:
 def get_poll(game_info: list[str], info: Info) -> Poll:
     game_date: datetime = croniter(info.cron_game, datetime.now()).get_next(datetime)
 
+    game_date = game_date.astimezone(pytz.timezone(info.time_zone))
+
     return Poll(
         id=randint(0, sys.maxsize),
-        question=TypeTextWithEntities(f'Во что играем {game_date.strftime('%d.%m.%Y')}?', []),
+        question=TypeTextWithEntities(f'Во что играем {game_date.strftime('%d.%m')}?', []),
         answers=get_answers(game_info),
         closed=False,
         public_voters=True,

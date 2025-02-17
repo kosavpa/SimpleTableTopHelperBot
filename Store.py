@@ -21,6 +21,8 @@ class Info(Base):
 
     cron_game: Mapped[str] = mapped_column(__type="varchar(40)", nullable=True)
 
+    time_zone: Mapped[str] = mapped_column(__type="varchar(40)", nullable=True)
+
     chat_id: Mapped[int] = mapped_column(nullable=False)
 
     forum_id: Mapped[int] = mapped_column(nullable=True)
@@ -34,8 +36,19 @@ class Info(Base):
             'cron_game': self.cron_game,
             'chat_id': self.chat_id,
             'forum_id': self.forum_id,
+            'time_zone': {self.time_zone},
             'range': self.range
         }
+
+    def get_info(self) -> str:
+        return f"""
+            'sheet_id': {self.sheet_id},
+            'cron_question_about_game': {self.cron_question_about_game},
+            'cron_game': {self.cron_game},
+            'chat_id': {self.chat_id},
+            'forum_id': {self.forum_id},
+            'time_zone': {self.time_zone},
+            'range': {self.range}"""
 
 
 _engine = create_async_engine("sqlite+aiosqlite://", poolclass=AsyncAdaptedQueuePool)
