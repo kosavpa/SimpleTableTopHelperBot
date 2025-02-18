@@ -36,7 +36,7 @@ class Info(Base):
             'cron_game': self.cron_game,
             'chat_id': self.chat_id,
             'forum_id': self.forum_id,
-            'time_zone': {self.time_zone},
+            'time_zone': self.time_zone,
             'range': self.range
         }
 
