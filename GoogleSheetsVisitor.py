@@ -28,7 +28,7 @@ def get_prepared_row(row: list):
         if len(another_game_info) == 0:
             return game_name
         else:
-            another_game_info_str = ''.join([' ('] + another_game_info + [')'])
+            another_game_info_str = '|'.join([' ('] + another_game_info + [')'])
 
             if (100 - len(game_name) - len(another_game_info_str)) >= 0:
                 return game_name + another_game_info_str
